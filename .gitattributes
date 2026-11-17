@@ -1,0 +1,7 @@
+* -text
+*.php text
+*.css text
+*.js text
+*.html text
+*.md text
+*.bat eol=crlf
