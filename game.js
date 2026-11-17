@@ -76,8 +76,16 @@
         el.className = 'plate reveal';
         el.setAttribute('data-side', side);
         el.setAttribute('data-key', row.key);
+        var art;
+        if (side === 'country') {
+            art = '<img class="ph flag" src="' + row.flag + '" alt="Флаг: ' + row.country
+                + '" loading="lazy" width="320" height="220">';
+        } else {
+            art = '<img class="ph" src="' + row.photo + '" alt="' + row.landmark
+                + '" loading="lazy" width="480" height="300">';
+        }
         el.innerHTML =
-            '<span class="pic" aria-hidden="true">' + (side === 'country' ? row.artC : row.artK) + '</span>'
+            '<span class="pic' + (side === 'country' ? ' pic-flag' : ' pic-photo') + '">' + art + '</span>'
             + '<span class="txt"><b></b><small></small></span>'
             + '<span class="tag" aria-hidden="true"></span>';
         el.querySelector('.txt b').textContent = side === 'country' ? row.country : row.capital;

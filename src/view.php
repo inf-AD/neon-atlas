@@ -32,6 +32,8 @@ function neon_payload(): array
             'landmark' => $row['landmark'],
             'fact'     => $row['fact'],
             'code'     => $code,
+            'flag'     => 'img/flag_' . $key . '.png',
+            'photo'    => 'img/' . $key . '.jpg',
             'artC'     => country_badge($code, $row['country'], $hues[$i % count($hues)]),
             'artK'     => capital_mark($row['mark'], $row['landmark']),
         ];
@@ -41,8 +43,43 @@ function neon_payload(): array
     return $out;
 }
 
+/**
+ * Авторы фотографий и флагов — по данным credits.json.
+ * Лицензии CC BY и CC BY-SA требуют указания автора, поэтому блок
+ * с титрами выводится внизу страницы.
+ * @return list<array<string, string>>
+ */
+function neon_credits(): array
+{
+    $path = __DIR__ . '/credits.json';
+    if (!is_file($path)) {
+        return [];
+    }
+    $raw = json_decode((string) file_get_contents($path), true);
+    if (!is_array($raw)) {
+        return [];
+    }
+
+    $out = [];
+    foreach ($raw as $item) {
+        if (!is_array($item) || !isset($item['title'])) {
+            continue;
+        }
+        $out[] = [
+            'title'   => (string) $item['title'],
+            'author'  => (string) ($item['author'] ?? 'Wikimedia Commons'),
+            'license' => (string) ($item['license'] ?? ''),
+            'page'    => (string) ($item['page'] ?? ''),
+            'kind'    => (string) ($item['kind'] ?? 'photo'),
+        ];
+    }
+    usort($out, static fn (array $a, array $b): int => strcmp($a['title'], $b['title']));
+    return $out;
+}
+
 function render_page(array $payload, bool $static = false): string
 {
+    $credits = neon_credits();
     $json = json_encode(
         ['pairs' => array_values($payload), 'size' => ROUND_SIZE],
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -149,6 +186,30 @@ function render_page(array $payload, bool $static = false): string
     <div class="actions">
         <button type="button" class="btn primary" id="btn-again">Ещё раунд</button>
     </div>
+
+    <?php if ($credits !== []): ?>
+    <details class="credits">
+        <summary>Фотографии и флаги: авторы и лицензии</summary>
+        <p class="credits-note">
+            Все снимки взяты с Wikimedia Commons. Лицензии CC BY и CC BY-SA требуют
+            указывать автора — это и есть назначение списка.
+        </p>
+        <ul>
+            <?php foreach ($credits as $c): ?>
+                <li>
+                    <?php if ($c['page'] !== ''): ?>
+                        <a href="<?= htmlspecialchars($c['page'], ENT_QUOTES, 'UTF-8') ?>"
+                           target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($c['title'], ENT_QUOTES, 'UTF-8') ?></a>
+                    <?php else: ?>
+                        <?= htmlspecialchars($c['title'], ENT_QUOTES, 'UTF-8') ?>
+                    <?php endif; ?>
+                    — <?= htmlspecialchars($c['author'], ENT_QUOTES, 'UTF-8') ?>
+                    <span class="lic"><?= htmlspecialchars($c['license'], ENT_QUOTES, 'UTF-8') ?></span>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </details>
+    <?php endif; ?>
 
     <div class="foot">
         <span>Neon Atlas · PHP + HTML</span>

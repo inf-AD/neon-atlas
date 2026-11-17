@@ -1,19 +1,19 @@
 /* ================================================================
    NEON ATLAS — квиз «страна ↔ столица»
-   Киберпанк: тёмный фон, неон, стекло, сканлайны.
+   Киберпанк: светлый фон, неон, стекло, сканлайны.
    ================================================================ */
 
 :root {
-    --bg: #070312;
-    --bg-2: #0d0620;
-    --panel: rgba(20, 12, 44, .72);
-    --panel-2: rgba(30, 18, 62, .58);
-    --glass: rgba(255, 255, 255, .045);
-    --line: rgba(140, 110, 255, .28);
-    --line-hot: rgba(255, 62, 165, .45);
-    --text: #eae6ff;
-    --text-dim: #a99ed0;
-    --text-soft: #7f76a6;
+    --bg: #2a2450;
+    --bg-2: #3b3268;
+    --panel: rgba(46, 38, 88, .62);
+    --panel-2: rgba(58, 48, 104, .52);
+    --glass: rgba(255, 255, 255, .09);
+    --line: rgba(168, 140, 255, .40);
+    --line-hot: rgba(255, 92, 180, .58);
+    --text: #f6f2ff;
+    --text-dim: #cfc4f0;
+    --text-soft: #a99ce0;
     --cyan: #22f0ff;
     --magenta: #ff3ea5;
     --violet: #a06bff;
@@ -37,10 +37,10 @@ body {
     padding: 0;
     color: var(--text);
     background:
-        radial-gradient(1000px 620px at 12% -8%, rgba(160, 107, 255, .30), transparent 62%),
-        radial-gradient(880px 560px at 92% 4%, rgba(34, 240, 255, .20), transparent 60%),
-        radial-gradient(760px 520px at 50% 108%, rgba(255, 62, 165, .18), transparent 62%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 58%, #06020f 100%);
+        radial-gradient(1000px 620px at 12% -8%, rgba(196, 160, 255, .55), transparent 62%),
+        radial-gradient(880px 560px at 92% 4%, rgba(96, 232, 255, .40), transparent 60%),
+        radial-gradient(760px 520px at 50% 108%, rgba(255, 120, 195, .38), transparent 62%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 58%, #241f45 100%);
     background-attachment: fixed;
     font-family: var(--font);
     font-size: 17px;
@@ -57,8 +57,8 @@ body::before {
     pointer-events: none;
     z-index: 0;
     background-image:
-        linear-gradient(rgba(120, 90, 255, .09) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(120, 90, 255, .09) 1px, transparent 1px);
+        linear-gradient(rgba(190, 170, 255, .16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(190, 170, 255, .16) 1px, transparent 1px);
     background-size: 46px 46px;
     mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
     -webkit-mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
@@ -73,11 +73,11 @@ body::after {
     z-index: 3;
     background: repeating-linear-gradient(
         180deg,
-        rgba(255, 255, 255, .028) 0 1px,
+        rgba(255, 255, 255, .05) 0 1px,
         transparent 1px 3px
     );
-    mix-blend-mode: overlay;
-    opacity: .55;
+    mix-blend-mode: soft-light;
+    opacity: .40;
 }
 
 .wrap {
@@ -320,17 +320,48 @@ body::after {
 }
 
 .plate .pic {
-    flex: 0 0 96px;
-    height: 62px;
+    position: relative;
+    flex: 0 0 108px;
+    height: 68px;
     border-radius: 10px;
-    background: radial-gradient(120% 120% at 30% 10%, rgba(120, 90, 255, .22), rgba(8, 4, 20, .7));
-    border: 1px solid rgba(140, 110, 255, .22);
+    background: radial-gradient(120% 120% at 30% 10%, rgba(160, 130, 255, .30), rgba(30, 24, 60, .65));
+    border: 1px solid rgba(180, 150, 255, .34);
     display: grid;
     place-items: center;
     overflow: hidden;
+    box-shadow: inset 0 0 18px rgba(10, 6, 26, .35);
 }
 
 .plate .pic svg { width: 100%; height: 100%; display: block; }
+
+/* фото достопримечательности */
+.plate .pic .ph {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center 45%;
+    filter: saturate(1.08) contrast(1.04);
+    transition: transform .3s ease, filter .3s ease;
+}
+
+.plate:hover .pic .ph { transform: scale(1.06); filter: saturate(1.16) contrast(1.06); }
+
+.plate.locked .pic .ph { filter: saturate(1.02) contrast(1.02) brightness(.96); }
+
+/* флаг страны — вписываем целиком, без обрезки */
+.plate .pic.pic-flag {
+    padding: 7px;
+    background: linear-gradient(160deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05));
+}
+
+.plate .pic .ph.flag {
+    object-fit: contain;
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(8, 4, 20, .45);
+}
+
+.plate:hover .pic .ph.flag { transform: none; }
 
 .plate .txt { min-width: 0; }
 
@@ -581,6 +612,89 @@ body::after {
 
 /* ---------------- подвал ---------------- */
 
+/* титры фотографий */
+.credits {
+    margin-top: 26px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--panel);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 13px;
+    color: var(--text-dim);
+}
+
+.credits summary {
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    list-style: none;
+}
+
+.credits summary::-webkit-details-marker { display: none; }
+
+.credits summary::before {
+    content: "+ ";
+    font-family: var(--mono);
+}
+
+.credits[open] summary::before { content: "− "; }
+
+.credits-note {
+    margin: 10px 0 8px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--text-soft);
+}
+
+.credits ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.credits li {
+    font-size: 12.5px;
+    line-height: 1.4;
+    padding-left: 12px;
+    position: relative;
+}
+
+.credits li::before {
+    content: "·";
+    position: absolute;
+    left: 2px;
+    color: var(--violet);
+}
+
+.credits a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--line-hot);
+}
+
+.credits a:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+.credits .lic {
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .04em;
+    color: var(--lime);
+    background: rgba(184, 255, 60, .10);
+    border: 1px solid rgba(184, 255, 60, .22);
+    white-space: nowrap;
+}
+
 .foot {
     margin-top: 34px;
     padding-top: 16px;
@@ -619,7 +733,7 @@ body::after {
 
     .col-head { padding-top: 8px; }
 
-    .plate .pic { flex-basis: 82px; height: 54px; }
+    .plate .pic { flex-basis: 92px; height: 58px; }
 
     .plate .txt b { font-size: 17px; }
 }
@@ -639,7 +753,7 @@ body::after {
 
     .plate { padding: 10px 11px; gap: 10px; }
 
-    .plate .pic { flex-basis: 68px; height: 46px; }
+    .plate .pic { flex-basis: 84px; height: 54px; }
 
     .plate .txt small { font-size: 10.5px; letter-spacing: .06em; }
 
