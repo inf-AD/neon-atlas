@@ -318,5 +318,165 @@
     "author": "Lethiciasouza",
     "page": "https://commons.wikimedia.org/wiki/File%3AAnitkabir_Ankara.jpg",
     "bytes": 25464
+  },
+  "pt": {
+    "file": "pt.jpg",
+    "title": "Torre Belém April 2009-4a.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Alvesgaspar",
+    "page": "https://commons.wikimedia.org/wiki/File%3ATorre_Bel%C3%A9m_April_2009-4a.jpg",
+    "bytes": 32405
+  },
+  "cz": {
+    "file": "cz.jpg",
+    "title": "North view of Charles Bridge from Mánesův most, Prague 20160808 1.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "DXR",
+    "page": "https://commons.wikimedia.org/wiki/File%3ANorth_view_of_Charles_Bridge_from_M%C3%A1nes%C5%AFv_most%2C_Prague_20160808_1.jpg",
+    "bytes": 32065
+  },
+  "at": {
+    "file": "at.jpg",
+    "title": "Schoenbrunn Palace as seen from Neptune Fountain, September 2016.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Martin Falbisoner",
+    "page": "https://commons.wikimedia.org/wiki/File%3ASchoenbrunn_Palace_as_seen_from_Neptune_Fountain%2C_September_2016.jpg",
+    "bytes": 27985
+  },
+  "hu": {
+    "file": "hu.jpg",
+    "title": "HUN-2015-Budapest-Hungarian Parliament (Budapest) 2015-02.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Godot13",
+    "page": "https://commons.wikimedia.org/wiki/File%3AHUN-2015-Budapest-Hungarian_Parliament_%28Budapest%29_2015-02.jpg",
+    "bytes": 26774
+  },
+  "kr": {
+    "file": "kr.jpg",
+    "title": "Gyeonghoeru (Royal Banquet Hall) at Gyeongbokgung Palace, Seoul.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Frank Schulenburg",
+    "page": "https://commons.wikimedia.org/wiki/File%3AGyeonghoeru_%28Royal_Banquet_Hall%29_at_Gyeongbokgung_Palace%2C_Seoul.jpg",
+    "bytes": 28533
+  },
+  "th": {
+    "file": "th.jpg",
+    "title": "A roof of a building at the Grand Palace, Bangkok, sunrise, 2017.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Bjørn Erik Pedersen",
+    "page": "https://commons.wikimedia.org/wiki/File%3AA_roof_of_a_building_at_the_Grand_Palace%2C_Bangkok%2C_sunrise%2C_2017.jpg",
+    "bytes": 16191
+  },
+  "mx": {
+    "file": "mx.jpg",
+    "title": "Angel de la independencia170409.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Carlos Valenzuela",
+    "page": "https://commons.wikimedia.org/wiki/File%3AAngel_de_la_independencia170409.jpg",
+    "bytes": 25871
+  },
+  "ar": {
+    "file": "ar.jpg",
+    "title": "Parte superior del Obelisco de Buenos Aires.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "ProtoplasmaKid",
+    "page": "https://commons.wikimedia.org/wiki/File%3AParte_superior_del_Obelisco_de_Buenos_Aires.jpg",
+    "bytes": 28077
+  },
+  "ng": {
+    "file": "ng.jpg",
+    "title": "AbujaNationalMosque.jpg",
+    "license": "CC BY-SA 2.0",
+    "author": "Shiraz Chakera",
+    "page": "https://commons.wikimedia.org/wiki/File%3AAbujaNationalMosque.jpg",
+    "bytes": 26089
+  },
+  "za": {
+    "file": "za.jpg",
+    "title": "Union Buildings Pretoria 05.jpg",
+    "license": "CC BY 4.0",
+    "author": "Ruby D-Brown",
+    "page": "https://commons.wikimedia.org/wiki/File%3AUnion_Buildings_Pretoria_05.jpg",
+    "bytes": 36033
+  },
+  "flag_pt": {
+    "file": "flag_pt.png",
+    "title": "Flag of Portugal.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_Portugal.svg",
+    "bytes": 17165
+  },
+  "flag_cz": {
+    "file": "flag_cz.png",
+    "title": "Flag of the Czech Republic.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_the_Czech_Republic.svg",
+    "bytes": 4797
+  },
+  "flag_at": {
+    "file": "flag_at.png",
+    "title": "Flag of Austria.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Austria.svg",
+    "bytes": 609
+  },
+  "flag_hu": {
+    "file": "flag_hu.png",
+    "title": "Flag of Hungary.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Hungary.svg",
+    "bytes": 496
+  },
+  "flag_kr": {
+    "file": "flag_kr.png",
+    "title": "Flag of South Korea.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_South_Korea.svg",
+    "bytes": 20516
+  },
+  "flag_th": {
+    "file": "flag_th.png",
+    "title": "Flag of Thailand.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Thailand.svg",
+    "bytes": 684
+  },
+  "flag_mx": {
+    "file": "flag_mx.png",
+    "title": "Flag of Mexico.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Mexico.svg",
+    "bytes": 12417
+  },
+  "flag_ar": {
+    "file": "flag_ar.png",
+    "title": "Flag of Argentina.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Argentina.svg",
+    "bytes": 7591
+  },
+  "flag_ng": {
+    "file": "flag_ng.png",
+    "title": "Flag of Nigeria.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Nigeria.svg",
+    "bytes": 471
+  },
+  "flag_za": {
+    "file": "flag_za.png",
+    "title": "Flag of South Africa.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File:Flag_of_South_Africa.svg",
+    "bytes": 14033
   }
 }

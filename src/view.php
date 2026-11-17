@@ -10,21 +10,21 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/marks.php';
 
-const ROUND_SIZE = 5;
-const ROUND_COUNT = 4;
-const MAX_MISS = 2;
+const ROUND_SIZE = 6;
+const ROUND_COUNT = 5;
 
 /**
  * План раундов: от простых пар к сложным.
- * Раунд 1 — страны, которые знают все; раунд 4 — те, где столица
+ * Раунд 1 — страны, которые знают все; раунд 5 — те, где столица
  * не совпадает с очевидным ответом.
  * @var list<list<string>>
  */
 const ROUND_PLAN = [
-    ['fr', 'gb', 'it', 'es', 'eg'],
-    ['de', 'gr', 'ru', 'cn', 'jp'],
-    ['us', 'ca', 'au', 'br', 'tr'],
-    ['nl', 'in', 'ae', 'ch', 'ma'],
+    ['fr', 'gb', 'it', 'es', 'de', 'eg'],
+    ['ru', 'cn', 'jp', 'us', 'tr', 'gr'],
+    ['ca', 'au', 'br', 'pt', 'nl', 'in'],
+    ['ch', 'cz', 'at', 'hu', 'kr', 'mx'],
+    ['th', 'ar', 'ng', 'za', 'ae', 'ma'],
 ];
 
 /**
@@ -100,7 +100,6 @@ function render_page(array $payload, bool $static = false): string
             'pairs'    => array_values($payload),
             'size'     => ROUND_SIZE,
             'rounds'   => ROUND_COUNT,
-            'maxMiss'  => MAX_MISS,
             'plan'     => ROUND_PLAN,
             'mail'     => 'kovalenko_09@mail.ru',
         ],
@@ -120,7 +119,7 @@ function render_page(array $payload, bool $static = false): string
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NEON ATLAS · страна и столица</title>
-<meta name="description" content="Мини-игра: соотнесите страну и её столицу. Четыре раунда по пять пар, неон, таймер.">
+<meta name="description" content="Мини-игра: соотнесите страну и её столицу. Пять раундов по шесть пар, очки за пары, неон, таймер.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -153,8 +152,8 @@ function render_page(array $payload, bool $static = false): string
                 <b id="hud-pairs">0/<?= ROUND_SIZE ?></b>
             </div>
             <div class="hud-item hot">
-                <small>Ошибки</small>
-                <b id="hud-miss">0/<?= MAX_MISS ?></b>
+                <small>Очки</small>
+                <b id="hud-score">0</b>
             </div>
             <div class="hud-item">
                 <small>Время</small>
@@ -166,15 +165,15 @@ function render_page(array $payload, bool $static = false): string
     <section class="intro">
         <h1>Соедините <em>страну</em> и её <em>столицу</em></h1>
         <p>
-            Четыре раунда по пять пар — от самых известных стран к тем,
+            Пять раундов по шесть пар — от самых известных стран к тем,
             где столица не совпадает с очевидным ответом.
             Нажмите плашку слева, затем плашку справа. Правильная пара загорается зелёным.
-            Неверная гаснет, а ошибка записывается в счётчик.
+            Неверная гаснет, а вы теряете очки.
         </p>
         <div class="rules">
             <span class="chip">Раундов <b><?= ROUND_COUNT ?></b></span>
             <span class="chip">В раунде <b><?= ROUND_SIZE ?></b> пар</span>
-            <span class="chip">Ошибок до проигрыша <b><?= MAX_MISS ?></b></span>
+            <span class="chip">С первой попытки <b>3</b> очка</span>
         </div>
     </section>
 
@@ -192,7 +191,8 @@ function render_page(array $payload, bool $static = false): string
             <button type="submit" class="btn primary big" id="btn-start">Начать игру</button>
         </form>
         <p class="screen-hint">
-            Игра идёт без остановки: два промаха — и раунд закрыт.
+            Пять раундов по шесть пар. За пару с первой попытки — 3 очка,
+            с одной ошибкой — 2, в остальных случаях — 1.
         </p>
     </section>
 
@@ -242,6 +242,7 @@ function render_page(array $payload, bool $static = false): string
                         <th>Пар собрано</th>
                         <th>Ошибок</th>
                         <th>Время</th>
+                        <th>Очки</th>
                         <th>Итог раунда</th>
                     </tr>
                 </thead>
@@ -263,6 +264,7 @@ function render_page(array $payload, bool $static = false): string
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="Игрок" id="f-player" value="">
+            <input type="hidden" name="Очки" id="f-score" value="">
             <input type="hidden" name="Верно собрано пар" id="f-solved" value="">
             <input type="hidden" name="Общее время" id="f-total" value="">
             <div id="f-rounds"></div>

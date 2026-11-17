@@ -1,13 +1,17 @@
-/* NEON ATLAS — игра «страна ↔ столица»: 4 раунда по 5 пар, статистика, Excel */
+/* NEON ATLAS — игра «страна ↔ столица»: 5 раундов по 6 пар, очки, статистика, Excel */
 (function () {
     'use strict';
 
     var DATA = window.NEON || {};
     var ALL = DATA.pairs || [];
-    var SIZE = DATA.size || 5;
-    var ROUNDS = DATA.rounds || 4;
-    var MAX_MISS = DATA.maxMiss || 2;
+    var SIZE = DATA.size || 6;
+    var ROUNDS = DATA.rounds || 5;
     var PLAN = DATA.plan || [];
+
+    /* Очки за пару: с первой попытки, с одной ошибкой, во всех остальных случаях. */
+    var PTS_FIRST = 3;
+    var PTS_ONE_MISS = 2;
+    var PTS_OTHER = 1;
 
     var FACTS = {};
     var BY_KEY = {};
@@ -16,7 +20,7 @@
         BY_KEY[row.key] = row;
     });
 
-    var ROUND_LABEL = ['Разминка', 'Уверенный уровень', 'Сложнее', 'Знатоки'];
+    var ROUND_LABEL = ['Разминка', 'Уверенный уровень', 'Сложнее', 'Знатоки', 'Мастера'];
 
     /* ---------- элементы ---------- */
     var colC = document.getElementById('col-country');
@@ -30,7 +34,7 @@
 
     var hudRound = document.getElementById('hud-round');
     var hudPairs = document.getElementById('hud-pairs');
-    var hudMiss = document.getElementById('hud-miss');
+    var hudScore = document.getElementById('hud-score');
     var hudTime = document.getElementById('hud-time');
 
     var roundNow = document.getElementById('round-now');
@@ -57,6 +61,9 @@
         picked: null,
         solved: {},
         miss: 0,
+        score: 0,
+        roundScore: 0,
+        attempts: {},
         roundRows: [],
         platesByKey: {},
         plates: [],
@@ -90,12 +97,6 @@
 
     function solvedCount() {
         return Object.keys(state.solved).length;
-    }
-
-    function liveCount() {
-        return state.plates.filter(function (el) {
-            return !el.classList.contains('dead') && !el.classList.contains('locked');
-        }).length;
     }
 
     function showScreen(which) {
@@ -162,6 +163,8 @@
         state.picked = null;
         state.solved = {};
         state.miss = 0;
+        state.roundScore = 0;
+        state.attempts = {};
         state.busy = false;
         state.finished = false;
         state.roundStart = Date.now();
@@ -192,7 +195,7 @@
 
         hudRound.textContent = (i + 1) + '/' + ROUNDS;
         hudPairs.textContent = '0/' + SIZE;
-        hudMiss.textContent = '0/' + MAX_MISS;
+        hudScore.textContent = String(state.score);
         hudTime.textContent = '0:00';
         roundNow.textContent = String(i + 1);
         roundSub.textContent = ROUND_LABEL[i] || '';
@@ -226,7 +229,7 @@
 
     function pick(el) {
         if (state.busy || state.finished) { return; }
-        if (el.classList.contains('locked') || el.classList.contains('dead')) { return; }
+        if (el.classList.contains('locked')) { return; }
 
         var side = el.getAttribute('data-side');
         var key = el.getAttribute('data-key');
@@ -257,50 +260,58 @@
         check(state.picked, { el: el, side: side, key: key });
     }
 
-    function killPair(a, b) {
-        [a, b].forEach(function (el) {
-            if (!el) { return; }
-            el.classList.remove('sel', 'hint', 'wrong');
-            el.classList.add('dead');
-            el.setAttribute('aria-disabled', 'true');
-            el.setAttribute('tabindex', '-1');
-        });
+    function plural(n, one, few, many) {
+        var n10 = n % 10;
+        var n100 = n % 100;
+        if (n10 === 1 && n100 !== 11) { return one; }
+        if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) { return few; }
+        return many;
+    }
+
+    function pointsFor(attempts) {
+        if (attempts === 0) { return PTS_FIRST; }
+        if (attempts === 1) { return PTS_ONE_MISS; }
+        return PTS_OTHER;
     }
 
     function check(a, b) {
         var countryEl = a.side === 'country' ? a.el : b.el;
         var capitalEl = a.side === 'capital' ? a.el : b.el;
-        var key = a.key;
+        var cKey = a.side === 'country' ? a.key : b.key;
+        var kKey = a.side === 'capital' ? a.key : b.key;
 
         clearSel();
 
-        if (a.key === b.key) {
+        if (cKey === kKey) {
             state.busy = true;
             countryEl.classList.add('locked');
             capitalEl.classList.add('locked');
-            state.solved[key] = true;
+            state.solved[cKey] = true;
+
+            var pts = pointsFor(state.attempts[cKey] || 0);
+            state.roundScore += pts;
+            state.score += pts;
+            hudScore.textContent = String(state.score);
             hudPairs.textContent = solvedCount() + '/' + SIZE;
-            say('Совпало. ' + (FACTS[key] || ''), 'ok');
+            say('Совпало: +' + pts + ' ' + plural(pts, 'очко', 'очка', 'очков')
+                + '. ' + (FACTS[cKey] || ''), 'ok');
 
             setTimeout(function () {
                 state.busy = false;
-                if (solvedCount() >= SIZE) { endRound(false); }
-                else if (liveCount() === 0) { endRound(true); }
+                if (solvedCount() >= SIZE) { endRound(); }
             }, 340);
             return;
         }
 
         state.miss += 1;
-        hudMiss.textContent = state.miss + '/' + MAX_MISS;
+        state.attempts[cKey] = (state.attempts[cKey] || 0) + 1;
         state.busy = true;
         [countryEl, capitalEl].forEach(function (el) { el.classList.add('wrong'); });
-        say('Не совпало. Ошибка ' + state.miss + ' из ' + MAX_MISS + '.', 'err');
+        say('Не совпало. Плашки остаются на месте — попробуйте другую пару.', 'err');
 
         setTimeout(function () {
-            killPair(countryEl, capitalEl);
+            [countryEl, capitalEl].forEach(function (el) { el.classList.remove('wrong'); });
             state.busy = false;
-            if (state.miss >= MAX_MISS) { endRound(true); }
-            else if (liveCount() === 0) { endRound(true); }
         }, 460);
     }
 
@@ -321,7 +332,7 @@
 
     /* ---------- конец раунда ---------- */
 
-    function endRound(failed) {
+    function endRound() {
         if (state.finished) { return; }
         state.finished = true;
         state.busy = true;
@@ -335,24 +346,18 @@
             solved: got,
             miss: state.miss,
             ms: ms,
-            failed: failed
+            score: state.roundScore
         });
         state.totalMs += ms;
 
         roKicker.textContent = 'Раунд ' + (state.roundIndex + 1) + ' из ' + ROUNDS;
-        roTitle.textContent = failed
-            ? 'Жаль, но вам пока еще рано отправляться в кругосветное путешествие!'
-            : 'Раунд пройден: ' + got + ' из ' + SIZE;
-        roSub.textContent = failed
-            ? 'Две ошибки — раунд закрыт. Дальше пары сложнее.'
-            : 'Все пары собраны. Дальше пары сложнее.';
+        roTitle.textContent = 'Раунд пройден: ' + got + ' из ' + SIZE;
+        roSub.textContent = 'Очки за раунд: ' + state.roundScore
+            + ' · всего ' + state.score + '. Дальше пары сложнее.';
 
         var html = '';
         state.roundRows.forEach(function (row) {
-            var pair = state.platesByKey[row.key] || {};
-            var lost = pair.country && pair.country.classList.contains('dead');
-            html += '<li' + (lost ? ' class="miss"' : '') + '><b>' + row.country + '</b>'
-                + ' — ' + row.capital + '</li>';
+            html += '<li><b>' + row.country + '</b> — ' + row.capital + '</li>';
         });
         roList.innerHTML = html;
 
@@ -375,8 +380,8 @@
         return state.results.reduce(function (s, r) { return s + r.miss; }, 0);
     }
 
-    function passedRounds() {
-        return state.results.filter(function (r) { return !r.failed; }).length;
+    function totalScore() {
+        return state.results.reduce(function (s, r) { return s + (r.score || 0); }, 0);
     }
 
     function finishGame() {
@@ -385,34 +390,37 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         var solved = totalSolved();
-        var passed = passedRounds();
+        var total = SIZE * ROUNDS;
+        var score = totalScore();
+        var maxScore = total * PTS_FIRST;
 
         finalTitle.innerHTML = 'Игра <em>завершена</em>';
-        finalVerdict.textContent = passed === ROUNDS
-            ? 'Все четыре раунда пройдены. Кругосветное путешествие состоялось!'
-            : passed === 0
-                ? 'Пока ни одного раунда без двух ошибок. Пары те же — попробуйте ещё раз.'
-                : 'Пройдено раундов: ' + passed + ' из ' + ROUNDS + '. Есть куда расти.';
+        finalVerdict.textContent = solved === total
+            ? 'Все пары собраны. Кругосветное путешествие состоялось!'
+            : solved >= total / 2
+                ? 'Больше половины пар собрано. Есть куда расти — попробуйте ещё раз.'
+                : 'Пока собрана меньшая часть пар. Пары те же — попробуйте ещё раз.';
 
         finalGrid.innerHTML =
             '<div class="final-card"><small>Игрок</small><b>' + esc(state.name) + '</b></div>'
-            + '<div class="final-card"><small>Верно собрано пар</small><b>' + solved + ' из ' + (SIZE * ROUNDS) + '</b></div>'
-            + '<div class="final-card"><small>Раундов пройдено</small><b>' + passed + ' из ' + ROUNDS + '</b></div>'
-            + '<div class="final-card hot"><small>Общее время</small><b>' + clock(state.totalMs) + '</b></div>';
+            + '<div class="final-card hot"><small>Очки</small><b>' + score + ' из ' + maxScore + '</b></div>'
+            + '<div class="final-card"><small>Верно собрано пар</small><b>' + solved + ' из ' + total + '</b></div>'
+            + '<div class="final-card"><small>Общее время</small><b>' + clock(state.totalMs) + '</b></div>';
 
         var html = '';
         state.results.forEach(function (r) {
-            html += '<tr' + (r.failed ? ' class="miss"' : '') + '>'
+            html += '<tr>'
                 + '<td>' + r.round + '</td>'
                 + '<td>' + r.solved + ' из ' + SIZE + '</td>'
                 + '<td>' + r.miss + '</td>'
                 + '<td>' + clock(r.ms) + '</td>'
-                + '<td>' + (r.failed ? 'закрыт двумя ошибками' : 'пройден') + '</td>'
+                + '<td><b>' + (r.score || 0) + '</b></td>'
+                + '<td>пройден</td>'
                 + '</tr>';
         });
-        html += '<tr class="total"><td>Всего</td><td>' + solved + ' из ' + (SIZE * ROUNDS) + '</td>'
+        html += '<tr class="total"><td>Всего</td><td>' + solved + ' из ' + total + '</td>'
             + '<td>' + totalMiss() + '</td><td>' + clock(state.totalMs) + '</td>'
-            + '<td>' + passed + ' из ' + ROUNDS + '</td></tr>';
+            + '<td><b>' + score + '</b></td><td>' + score + ' из ' + maxScore + '</td></tr>';
         finalBody.innerHTML = html;
 
         sendFlash.textContent = '';
@@ -573,14 +581,14 @@
 
     function xlsxBytes() {
         var rows = [
-            ['NEON ATLAS — статистика прохождения', '', '', '', ''],
+            ['NEON ATLAS — статистика прохождения', '', '', '', '', ''],
             ['Игрок / команда', state.name],
             ['Дата', new Date().toLocaleString('ru-RU')],
+            ['Очки', totalScore() + ' из ' + (SIZE * ROUNDS * PTS_FIRST)],
             ['Верно собрано пар', totalSolved() + ' из ' + (SIZE * ROUNDS)],
             ['Общее время', clock(state.totalMs)],
-            ['Раундов пройдено', passedRounds() + ' из ' + ROUNDS],
             [],
-            ['Раунд', 'Пар собрано', 'Ошибок', 'Время', 'Итог раунда']
+            ['Раунд', 'Пар собрано', 'Ошибок', 'Время', 'Очки', 'Итог раунда']
         ];
 
         state.results.forEach(function (r) {
@@ -589,7 +597,8 @@
                 r.solved + ' из ' + SIZE,
                 r.miss,
                 clock(r.ms),
-                r.failed ? 'закрыт двумя ошибками' : 'пройден'
+                r.score || 0,
+                'пройден'
             ]);
         });
 
@@ -598,7 +607,8 @@
             totalSolved() + ' из ' + (SIZE * ROUNDS),
             totalMiss(),
             clock(state.totalMs),
-            passedRounds() + ' из ' + ROUNDS
+            totalScore(),
+            totalScore() + ' из ' + (SIZE * ROUNDS * PTS_FIRST)
         ]);
 
         var files = [
@@ -668,6 +678,7 @@
 
     function fillSendForm() {
         document.getElementById('f-player').value = state.name;
+        document.getElementById('f-score').value = totalScore() + ' из ' + (SIZE * ROUNDS * PTS_FIRST);
         document.getElementById('f-solved').value = totalSolved() + ' из ' + (SIZE * ROUNDS);
         document.getElementById('f-total').value = clock(state.totalMs);
 
@@ -678,7 +689,8 @@
                 ['Раунд ' + r.round + ': пар собрано', r.solved + ' из ' + SIZE],
                 ['Раунд ' + r.round + ': ошибок', String(r.miss)],
                 ['Раунд ' + r.round + ': время', clock(r.ms)],
-                ['Раунд ' + r.round + ': итог', r.failed ? 'закрыт двумя ошибками' : 'пройден']
+                ['Раунд ' + r.round + ': очки', String(r.score || 0)],
+                ['Раунд ' + r.round + ': итог', 'пройден']
             ].forEach(function (pair) {
                 var input = document.createElement('input');
                 input.type = 'hidden';
