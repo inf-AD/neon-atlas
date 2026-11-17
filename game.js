@@ -62,6 +62,29 @@
         return Object.keys(state.solved).length;
     }
 
+    /* сколько плашек ещё можно выбрать */
+    function liveCount() {
+        return state.plates.filter(function (el) {
+            return !el.classList.contains('dead') && !el.classList.contains('locked');
+        }).length;
+    }
+
+    /* раунд закончен, когда собраны все пары или выбирать больше нечего */
+    function isRoundOver() {
+        return solvedCount() >= SIZE || liveCount() === 0;
+    }
+
+    /* неверная пара гаснет: обе плашки затемняются и больше не выбираются */
+    function killPair(a, b) {
+        [a, b].forEach(function (el) {
+            if (!el) { return; }
+            el.classList.remove('sel', 'hint', 'wrong');
+            el.classList.add('dead');
+            el.setAttribute('aria-disabled', 'true');
+            el.setAttribute('tabindex', '-1');
+        });
+    }
+
     function updateHud() {
         hudPairs.textContent = solvedCount() + '/' + SIZE;
         hudMiss.textContent = String(state.miss);
@@ -176,7 +199,7 @@
         var side = el.getAttribute('data-side');
         var key = el.getAttribute('data-key');
 
-        if (el.classList.contains('locked') || state.busy) { return; }
+        if (el.classList.contains('locked') || el.classList.contains('dead') || state.busy) { return; }
         startTimer();
 
         if (!state.picked) {
@@ -225,7 +248,7 @@
 
             setTimeout(function () {
                 state.busy = false;
-                if (solvedCount() === SIZE) { finish(); }
+                if (isRoundOver()) { finish(); }
             }, 340);
             return;
         }
@@ -234,12 +257,18 @@
         state.streak = 0;
         updateHud();
 
+        state.busy = true;
         [countryEl, capitalEl].forEach(function (el) {
             el.classList.add('wrong');
-            setTimeout(function () { el.classList.remove('wrong'); }, 420);
         });
 
-        say('Не совпало. Посмотрите на достопримечательность на плашке.', 'err');
+        say('Не совпало. Эта пара закрыта — обе плашки больше не выбираются.', 'err');
+
+        setTimeout(function () {
+            killPair(countryEl, capitalEl);
+            state.busy = false;
+            if (isRoundOver()) { finish(); }
+        }, 460);
     }
 
     /* ---------- подсказка ---------- */
@@ -268,12 +297,13 @@
         stopTimer();
         var ms = Date.now() - state.started;
         var score = Math.max(0, SIZE * 100 - state.miss * 25 - state.hints * 15);
-        var rank = score >= SIZE * 95 ? 'Идеально. Даже спутник не подкопается.'
-            : score >= SIZE * 75 ? 'Уверенный результат: почти все пары с первой попытки.'
-                : score >= SIZE * 50 ? 'Нормально. Ошибки — это тоже данные.'
-                    : 'Разминка засчитана. Попробуйте ещё раунд.';
+        var got = solvedCount();
+        var rank = got === SIZE && score >= SIZE * 95 ? 'Идеально. Даже спутник не подкопается.'
+            : got === SIZE ? 'Все пары собраны.'
+                : got >= SIZE / 2 ? 'Больше половины пар. Остальные закрылись ошибками.'
+                    : 'Раунд закрыт ошибками. Попробуйте ещё раз — пары те же, но порядок другой.';
 
-        resultScore.innerHTML = 'Пар: <b>' + SIZE + '/' + SIZE + '</b> · '
+        resultScore.innerHTML = 'Собрано пар: <b>' + solvedCount() + '/' + SIZE + '</b> · '
             + 'Ошибок: <b>' + state.miss + '</b> · '
             + 'Подсказок: <b>' + state.hints + '</b> · '
             + 'Время: <b>' + clock(ms) + '</b> · '
@@ -281,7 +311,9 @@
 
         var html = '';
         state.round.forEach(function (row) {
-            html += '<tr><td>' + row.country + '</td>'
+            var pair = state.byKey[row.key] || {};
+            var lost = pair.country && pair.country.classList.contains('dead');
+            html += '<tr' + (lost ? ' class="miss"' : '') + '><td>' + row.country + '</td>'
                 + '<td class="c">' + row.capital + '</td>'
                 + '<td class="f">' + row.landmark + '. ' + row.fact + '</td></tr>';
         });
@@ -306,7 +338,9 @@
         state.busy = false;
 
         state.plates.forEach(function (el) {
-            el.classList.remove('sel', 'locked', 'wrong', 'hint');
+            el.classList.remove('sel', 'locked', 'wrong', 'hint', 'dead');
+            el.removeAttribute('aria-disabled');
+            el.removeAttribute('tabindex');
         });
 
         result.classList.remove('show');
