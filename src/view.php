@@ -10,7 +10,22 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/marks.php';
 
-const ROUND_SIZE = 6;
+const ROUND_SIZE = 5;
+const ROUND_COUNT = 4;
+const MAX_MISS = 2;
+
+/**
+ * План раундов: от простых пар к сложным.
+ * Раунд 1 — страны, которые знают все; раунд 4 — те, где столица
+ * не совпадает с очевидным ответом.
+ * @var list<list<string>>
+ */
+const ROUND_PLAN = [
+    ['fr', 'gb', 'it', 'es', 'eg'],
+    ['de', 'gr', 'ru', 'cn', 'jp'],
+    ['us', 'ca', 'au', 'br', 'tr'],
+    ['nl', 'in', 'ae', 'ch', 'ma'],
+];
 
 /**
  * Все пары с готовыми SVG-иллюстрациями.
@@ -81,7 +96,14 @@ function render_page(array $payload, bool $static = false): string
 {
     $credits = neon_credits();
     $json = json_encode(
-        ['pairs' => array_values($payload), 'size' => ROUND_SIZE],
+        [
+            'pairs'    => array_values($payload),
+            'size'     => ROUND_SIZE,
+            'rounds'   => ROUND_COUNT,
+            'maxMiss'  => MAX_MISS,
+            'plan'     => ROUND_PLAN,
+            'mail'     => 'kovalenko_09@mail.ru',
+        ],
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
     );
@@ -98,7 +120,7 @@ function render_page(array $payload, bool $static = false): string
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NEON ATLAS · страна и столица</title>
-<meta name="description" content="Мини-игра: соотнесите страну и её столицу. Шесть пар, неон, таймер.">
+<meta name="description" content="Мини-игра: соотнесите страну и её столицу. Четыре раунда по пять пар, неон, таймер.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -123,16 +145,16 @@ function render_page(array $payload, bool $static = false): string
 
         <div class="hud" aria-live="polite">
             <div class="hud-item">
+                <small>Раунд</small>
+                <b id="hud-round">1/<?= ROUND_COUNT ?></b>
+            </div>
+            <div class="hud-item">
                 <small>Пары</small>
                 <b id="hud-pairs">0/<?= ROUND_SIZE ?></b>
             </div>
             <div class="hud-item hot">
                 <small>Ошибки</small>
-                <b id="hud-miss">0</b>
-            </div>
-            <div class="hud-item good">
-                <small>Серия</small>
-                <b id="hud-streak">0</b>
+                <b id="hud-miss">0/<?= MAX_MISS ?></b>
             </div>
             <div class="hud-item">
                 <small>Время</small>
@@ -144,48 +166,109 @@ function render_page(array $payload, bool $static = false): string
     <section class="intro">
         <h1>Соедините <em>страну</em> и её <em>столицу</em></h1>
         <p>
-            Нажмите плашку слева, затем плашку справа. Правильная пара загорается зелёным
-            и больше не двигается. Ошибка стоит одну попытку — но не отнимает пару.
+            Четыре раунда по пять пар — от самых известных стран к тем,
+            где столица не совпадает с очевидным ответом.
+            Нажмите плашку слева, затем плашку справа. Правильная пара загорается зелёным.
+            Неверная гаснет, а ошибка записывается в счётчик.
         </p>
         <div class="rules">
-            <span class="chip">Раунд <b><?= ROUND_SIZE ?></b> пар</span>
-            <span class="chip">Подсказка <b>H</b></span>
-            <span class="chip">Новый раунд <b>N</b></span>
-            <span class="chip">Сброс <b>R</b></span>
+            <span class="chip">Раундов <b><?= ROUND_COUNT ?></b></span>
+            <span class="chip">В раунде <b><?= ROUND_SIZE ?></b> пар</span>
+            <span class="chip">Ошибок до проигрыша <b><?= MAX_MISS ?></b></span>
         </div>
     </section>
 
-    <div class="board" id="board">
-        <div class="col" id="col-country">
-            <div class="col-head"><span>Страна</span><b>левый сектор</b></div>
-        </div>
-        <div class="col" id="col-capital">
-            <div class="col-head b"><span>Столица</span><b>правый сектор</b></div>
-        </div>
-    </div>
-
-    <div class="actions">
-        <button type="button" class="btn primary" id="btn-hint">Подсказка</button>
-        <button type="button" class="btn" id="btn-shuffle">Новый раунд</button>
-        <button type="button" class="btn" id="btn-reset">Сброс</button>
-    </div>
-
-    <p class="flash" id="flash" role="status" aria-live="polite"></p>
-
-    <section class="result" id="result" aria-live="polite">
-        <h2>Раунд <em>закрыт</em></h2>
-        <p class="score" id="result-score"></p>
-        <table>
-            <thead>
-                <tr><th>Страна</th><th>Столица</th><th>Подсказка</th></tr>
-            </thead>
-            <tbody id="result-body"></tbody>
-        </table>
+    <section class="screen screen-start" id="screen-start">
+        <h2 class="screen-title">Как вас <em>зовут</em>?</h2>
+        <p class="screen-note">
+            Имя или название команды попадёт в статистику прохождения.
+        </p>
+        <form class="start-form" id="start-form" autocomplete="off">
+            <label class="field">
+                <span>Имя игрока или команды</span>
+                <input type="text" id="player-name" name="player" maxlength="60"
+                       placeholder="Например: 9 «Б» или Команда «Меридиан»" required>
+            </label>
+            <button type="submit" class="btn primary big" id="btn-start">Начать игру</button>
+        </form>
+        <p class="screen-hint">
+            Игра идёт без остановки: два промаха — и раунд закрыт.
+        </p>
     </section>
 
-    <div class="actions">
-        <button type="button" class="btn primary" id="btn-again">Ещё раунд</button>
+    <section class="screen screen-game" id="screen-game" hidden>
+        <div class="round-bar">
+            <span class="round-label">Раунд <b id="round-now">1</b> из <?= ROUND_COUNT ?></span>
+            <span class="round-sub" id="round-sub"></span>
+        </div>
+
+        <div class="board" id="board">
+            <div class="col" id="col-country">
+                <div class="col-head"><span>Страна</span></div>
+            </div>
+            <div class="col" id="col-capital">
+                <div class="col-head b"><span>Столица</span></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="button" class="btn" id="btn-hint">Подсказка</button>
+        </div>
+
+        <p class="flash" id="flash" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="round-over" id="round-over" hidden>
+        <div class="round-over-card">
+            <p class="ro-kicker" id="ro-kicker"></p>
+            <h2 class="ro-title" id="ro-title"></h2>
+            <p class="ro-sub" id="ro-sub"></p>
+            <ul class="ro-list" id="ro-list"></ul>
+        </div>
     </div>
+
+    <section class="screen screen-final" id="screen-final" hidden aria-live="polite">
+        <h2 class="screen-title" id="final-title">Игра <em>завершена</em></h2>
+        <p class="final-verdict" id="final-verdict"></p>
+
+        <div class="final-grid" id="final-grid"></div>
+
+        <h3 class="final-sub">Статистика по раундам</h3>
+        <div class="table-scroll">
+            <table class="final-table">
+                <thead>
+                    <tr>
+                        <th>Раунд</th>
+                        <th>Пар собрано</th>
+                        <th>Ошибок</th>
+                        <th>Время</th>
+                        <th>Итог раунда</th>
+                    </tr>
+                </thead>
+                <tbody id="final-body"></tbody>
+            </table>
+        </div>
+
+        <div class="actions final-actions">
+            <button type="button" class="btn primary" id="btn-xlsx">Скачать Excel</button>
+            <button type="button" class="btn" id="btn-send">Отправить на почту</button>
+            <button type="button" class="btn" id="btn-restart">Играть снова</button>
+        </div>
+
+        <p class="flash" id="send-flash" role="status" aria-live="polite"></p>
+
+        <form class="send-form" id="send-form" hidden
+              action="https://formsubmit.co/kovalenko_09@mail.ru" method="POST">
+            <input type="hidden" name="_subject" value="Neon Atlas — статистика игрока">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="Игрок" id="f-player" value="">
+            <input type="hidden" name="Верно собрано пар" id="f-solved" value="">
+            <input type="hidden" name="Общее время" id="f-total" value="">
+            <div id="f-rounds"></div>
+            <button type="submit" class="btn primary" id="btn-send-go">Отправить письмо</button>
+        </form>
+    </section>
 
     <?php if ($credits !== []): ?>
     <details class="credits">

@@ -934,6 +934,313 @@ body::after {
     .result { padding: 20px; }
 }
 
+/* ---------------- экраны, старт, итоги ---------------- */
+
+.screen { animation: rise .4s cubic-bezier(.2, .8, .2, 1) both; }
+
+.screen[hidden] { display: none !important; }
+
+.screen-title {
+    margin: 26px 0 8px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--ink);
+}
+
+.screen-title em {
+    font-style: normal;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.screen-note,
+.screen-hint {
+    margin: 0 0 18px;
+    font-size: 15px;
+    color: var(--ink-soft);
+}
+
+.screen-hint {
+    margin-top: 16px;
+    font-size: 13.5px;
+    color: var(--ink-dim);
+}
+
+.start-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow);
+}
+
+.field {
+    display: flex;
+    flex: 1 1 280px;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.field > span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--violet);
+}
+
+.field input {
+    width: 100%;
+    padding: 13px 16px;
+    font-family: var(--font);
+    font-size: 16px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .92);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.field input::placeholder { color: #a7aec8; }
+
+.field input:focus {
+    border-color: rgba(124, 92, 255, .55);
+    box-shadow: 0 0 0 4px rgba(124, 92, 255, .12);
+}
+
+.btn.big {
+    padding: 15px 28px;
+    font-size: 14px;
+}
+
+.shake { animation: shake .42s cubic-bezier(.36, .07, .19, .97) both; }
+
+@keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+}
+
+.round-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px;
+    margin: 22px 0 4px;
+}
+
+.round-label {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+}
+
+.round-label b { color: var(--violet); font-size: 15px; }
+
+.round-sub {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #0a97ad;
+    border-radius: 999px;
+    background: rgba(0, 200, 224, .12);
+}
+
+/* финальный экран */
+.final-verdict {
+    margin: 0 0 20px;
+    font-size: 16px;
+    color: var(--ink-soft);
+}
+
+.final-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.final-card {
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    box-shadow: 0 14px 34px -26px rgba(90, 80, 180, .8);
+}
+
+.final-card small {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+}
+
+.final-card b {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ink);
+    word-break: break-word;
+}
+
+.final-card.hot b { color: #0a97ad; }
+
+.final-sub {
+    margin: 0 0 12px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--violet);
+}
+
+.table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, .72);
+}
+
+.final-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.final-table th,
+.final-table td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.final-table th {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--violet);
+    background: rgba(124, 92, 255, .06);
+    white-space: nowrap;
+}
+
+.final-table td { color: var(--ink-soft); }
+
+.final-table tr.miss td { color: #c0335a; }
+
+.final-table tr.total td {
+    font-weight: 800;
+    color: var(--ink);
+    background: rgba(0, 200, 224, .07);
+    border-bottom: none;
+}
+
+.final-actions { flex-wrap: wrap; }
+
+.send-form { margin-top: 14px; }
+
+/* оверлей конца раунда */
+.round-over {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(22, 26, 46, .38);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn .25s ease both;
+}
+
+.round-over[hidden] { display: none !important; }
+
+.round-over-card {
+    width: min(560px, 100%);
+    padding: 28px 26px;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 40px 90px -40px rgba(60, 50, 140, .8);
+    animation: rise .38s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.ro-kicker {
+    margin: 0 0 8px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+}
+
+.ro-title {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -.01em;
+    color: var(--ink);
+}
+
+.ro-sub {
+    margin: 0 0 16px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+}
+
+.ro-list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.ro-list li {
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: rgba(0, 200, 224, .07);
+}
+
+.ro-list li.miss {
+    color: #c0335a;
+    background: rgba(255, 92, 120, .1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 560px) {
+    .screen-title { font-size: 24px; }
+    .ro-title { font-size: 20px; }
+    .start-form { padding: 16px; }
+    .final-table th,
+    .final-table td { padding: 9px 10px; font-size: 13px; }
+}
+
 /* ---------------- печать ---------------- */
 
 @media print {

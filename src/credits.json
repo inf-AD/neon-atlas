@@ -254,5 +254,69 @@
     "author": "Peter the Great",
     "page": "https://commons.wikimedia.org/wiki/File:Flag_of_Russia.svg",
     "kind": "flag"
+  },
+  "ch": {
+    "file": "ch.jpg",
+    "title": "The Zytglogge clock tower.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Dmitry A. Mottl",
+    "page": "https://commons.wikimedia.org/wiki/File%3AThe_Zytglogge_clock_tower.jpg",
+    "bytes": 48836
+  },
+  "ma": {
+    "file": "ma.jpg",
+    "title": "Hassan Tower 01.jpg",
+    "license": "CC BY-SA 3.0",
+    "author": "Bernard Gagnon",
+    "page": "https://commons.wikimedia.org/wiki/File%3AHassan_Tower_01.jpg",
+    "bytes": 21917
+  },
+  "flag_br": {
+    "file": "flag_br.png",
+    "title": "Flag of Brazil.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_Brazil.svg",
+    "bytes": 18503
+  },
+  "flag_tr": {
+    "file": "flag_tr.png",
+    "title": "Flag of Turkey.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_Turkey.svg",
+    "bytes": 7591
+  },
+  "flag_ch": {
+    "file": "flag_ch.png",
+    "title": "Flag of Switzerland.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_Switzerland.svg",
+    "bytes": 937
+  },
+  "flag_ma": {
+    "file": "flag_ma.png",
+    "title": "Flag of Morocco.svg",
+    "license": "Public domain",
+    "author": "Wikimedia Commons",
+    "page": "https://commons.wikimedia.org/wiki/File%3AFlag_of_Morocco.svg",
+    "bytes": 6738
+  },
+  "br": {
+    "file": "br.jpg",
+    "title": "Brasilia Congresso Nacional 05 2007 221.jpg",
+    "license": "Public domain",
+    "author": "Mario Roberto Duran Ortiz",
+    "page": "https://commons.wikimedia.org/wiki/File%3ABrasilia_Congresso_Nacional_05_2007_221.jpg",
+    "bytes": 22185
+  },
+  "tr": {
+    "file": "tr.jpg",
+    "title": "Anitkabir Ankara.jpg",
+    "license": "CC BY-SA 4.0",
+    "author": "Lethiciasouza",
+    "page": "https://commons.wikimedia.org/wiki/File%3AAnitkabir_Ankara.jpg",
+    "bytes": 25464
   }
 }
