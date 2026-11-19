@@ -118,7 +118,7 @@ function render_page(array $payload, bool $static = false): string
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NEON ATLAS · страна и столица</title>
+<title>Гео-спринт · страна и столица</title>
 <meta name="description" content="Мини-игра: соотнесите страну и её столицу. Пять раундов по шесть пар, очки за пары, неон, таймер.">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -137,7 +137,7 @@ function render_page(array $payload, bool $static = false): string
                 </svg>
             </span>
             <span>
-                <b>Neon Atlas</b>
+                <b>Гео-спринт</b>
                 <span>страна · столица</span>
             </span>
         </a>
@@ -260,7 +260,7 @@ function render_page(array $payload, bool $static = false): string
 
         <form class="send-form" id="send-form" hidden
               action="https://formsubmit.co/kovalenko_09@mail.ru" method="POST">
-            <input type="hidden" name="_subject" value="Neon Atlas — статистика игрока">
+            <input type="hidden" name="_subject" value="Гео-спринт — статистика игрока">
             <input type="hidden" name="_template" value="table">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="Игрок" id="f-player" value="">
@@ -297,7 +297,7 @@ function render_page(array $payload, bool $static = false): string
     <?php endif; ?>
 
     <div class="foot">
-        <span>Neon Atlas · PHP + HTML</span>
+        <span>Гео-спринт · PHP + HTML</span>
         <span><?= htmlspecialchars($foot, ENT_QUOTES, 'UTF-8') ?></span>
     </div>
 

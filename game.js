@@ -1,4 +1,4 @@
-/* NEON ATLAS — игра «страна ↔ столица»: 5 раундов по 6 пар, очки, статистика, Excel */
+/* ГЕО-СПРИНТ — игра «страна ↔ столица»: 5 раундов по 6 пар, очки, статистика, Excel */
 (function () {
     'use strict';
 
@@ -581,7 +581,7 @@
 
     function xlsxBytes() {
         var rows = [
-            ['NEON ATLAS — статистика прохождения', '', '', '', '', ''],
+            ['ГЕО-СПРИНТ — статистика прохождения', '', '', '', '', ''],
             ['Игрок / команда', state.name],
             ['Дата', new Date().toLocaleString('ru-RU')],
             ['Очки', totalScore() + ' из ' + (SIZE * ROUNDS * PTS_FIRST)],
@@ -655,7 +655,7 @@
         var d = new Date();
         var stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0')
             + '-' + String(d.getDate()).padStart(2, '0');
-        return 'neon-atlas_' + base + '_' + stamp + '.xlsx';
+        return 'geo-sprint_' + base + '_' + stamp + '.xlsx';
     }
 
     function downloadXlsx() {
@@ -701,7 +701,7 @@
         });
 
         var subj = sendForm.querySelector('input[name="_subject"]');
-        if (subj) { subj.value = 'Neon Atlas — статистика: ' + state.name; }
+        if (subj) { subj.value = 'Гео-спринт — статистика: ' + state.name; }
     }
 
     function sendMail() {
