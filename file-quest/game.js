@@ -651,43 +651,73 @@
         }
     }
 
+    /* Голова в духе Пакмана: круг с открытым ртом по направлению движения. */
+    function drawHead(cx, cy, now, g) {
+        var r = (CELL - 4) / 2;
+        var ang = Math.atan2(state.dir.y, state.dir.x);
+        var chomp = 0.16 + (Math.sin(now / 150) * 0.5 + 0.5) * 0.42;
+        var pulse = 1 + Math.sin(now / 220) * 0.03;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(pulse, pulse);
+
+        // мягкая тень под головой
+        ctx.fillStyle = 'rgba(0,0,0,0.16)';
+        ctx.beginPath();
+        ctx.arc(1.5, 2.5, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // тело головы с вырезанным ртом
+        ctx.fillStyle = g.color;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, r, ang + chomp, ang + Math.PI * 2 - chomp);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // глаз сбоку от рта, зрачок смотрит вперёд
+        var eyeA = ang - Math.PI / 2;
+        var ex = Math.cos(eyeA) * r * 0.42;
+        var ey = Math.sin(eyeA) * r * 0.42;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(ex, ey, r * 0.27, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#12142b';
+        ctx.beginPath();
+        ctx.arc(ex + Math.cos(ang) * r * 0.1, ey + Math.sin(ang) * r * 0.1, r * 0.13, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
     function drawSnake(now) {
         var g = GROUPS[state.group];
         for (var i = state.snake.length - 1; i >= 0; i--) {
             var s = state.snake[i];
             var x = s.x * CELL, y = s.y * CELL;
-            var pad = i === 0 ? 2 : 3;
-            var pulse = i === 0 ? (1 + Math.sin(now / 220) * 0.03) : 1;
-            var size = (CELL - pad * 2) * pulse;
+
+            if (i === 0) {
+                drawHead(x + CELL / 2, y + CELL / 2, now, g);
+                continue;
+            }
+
+            var pad = 3;
+            var size = CELL - pad * 2;
             var ox = x + (CELL - size) / 2, oy = y + (CELL - size) / 2;
 
-            ctx.fillStyle = i === 0 ? g.color : g.light;
-            ctx.globalAlpha = i === 0 ? 1 : Math.max(0.45, 1 - i * 0.03);
-            roundRect(ox, oy, size, size, i === 0 ? 9 : 7);
+            ctx.fillStyle = g.light;
+            ctx.globalAlpha = Math.max(0.45, 1 - i * 0.03);
+            roundRect(ox, oy, size, size, 7);
             ctx.fill();
             ctx.globalAlpha = 1;
 
-            if (i === 0) {
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
-                roundRect(ox, oy, size, size, 9);
-                ctx.stroke();
-
-                // глаза смотрят по направлению движения
-                var ex = state.dir.x * 4, ey = state.dir.y * 4;
-                ctx.fillStyle = '#ffffff';
-                var e1x = ox + size * 0.32 + ex, e2x = ox + size * 0.68 + ex;
-                var eyy = oy + size * 0.34 + ey;
-                ctx.beginPath();
-                ctx.arc(e1x, eyy, 3.2, 0, Math.PI * 2);
-                ctx.arc(e2x, eyy, 3.2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#12142b';
-                ctx.beginPath();
-                ctx.arc(e1x + ex * 0.4, eyy + ey * 0.4, 1.6, 0, Math.PI * 2);
-                ctx.arc(e2x + ex * 0.4, eyy + ey * 0.4, 1.6, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (i === state.snake.length - 1) {
+            if (i === state.snake.length - 1) {
                 ctx.fillStyle = 'rgba(255,255,255,0.35)';
                 roundRect(ox + size * 0.3, oy + size * 0.3, size * 0.4, size * 0.4, 3);
                 ctx.fill();
