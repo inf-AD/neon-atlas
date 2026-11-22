@@ -10,7 +10,6 @@
     var SCORE = D.score;
     var GW = D.grid.w, GH = D.grid.h, CELL = D.grid.cell;
     var W = GW * CELL, H = GH * CELL;
-    var ON_FIELD = D.onField;
     var LIVES_START = 3;
     var START_LEN = 3;
     var BITE_COOLDOWN = 700;
@@ -67,9 +66,8 @@
         var klass = $('f-class').value;
         var letter = $('f-letter').value;
         var shop = $('f-shop').value;
-        var picked = document.querySelector('input[name="group"]:checked');
-        if (!nick || !klass || !letter || !shop || !picked) { return null; }
-        return { nick: nick, klass: klass, letter: letter, shop: shop, group: picked.value };
+        if (!nick || !klass || !letter || !shop) { return null; }
+        return { nick: nick, klass: klass, letter: letter, shop: shop };
     }
 
     $('start-form').addEventListener('submit', function (e) {
@@ -80,7 +78,7 @@
         state.klass = data.klass;
         state.letter = data.letter;
         state.shop = data.shop;
-        state.group = data.group;
+        state.group = LEVELS[0].group;
         state.levelIndex = 0;
         state.lives = LIVES_START;
         state.totalScore = 0;
@@ -89,7 +87,7 @@
         $('chip-player').hidden = false;
         $('chip-player').textContent = data.nick + ' · ' + data.klass + data.letter + ' · ' + data.shop;
         $('chip-target').hidden = false;
-        $('chip-target').textContent = GROUPS[data.group].label;
+        $('chip-target').textContent = GROUPS[LEVELS[0].group].label;
 
         openBrief();
     });
@@ -97,16 +95,17 @@
     /* ---------------- Брифинг ---------------- */
 
     function speedWord(ms) {
-        if (ms >= 150) { return 'Спокойная'; }
-        if (ms >= 125) { return 'Бодрая'; }
-        if (ms >= 105) { return 'Быстрая'; }
+        if (ms >= 300) { return 'Спокойная'; }
+        if (ms >= 250) { return 'Бодрая'; }
+        if (ms >= 215) { return 'Быстрая'; }
         return 'Очень быстрая';
     }
 
     function openBrief() {
         state.lives = LIVES_START;
         var lv = LEVELS[state.levelIndex];
-        var g = GROUPS[state.group];
+        state.group = lv.group;
+        var g = GROUPS[lv.group];
         $('brief-eyebrow').textContent = 'Уровень ' + lv.n + ' из ' + LEVELS.length;
         $('brief-name').textContent = lv.name;
         $('brief-tip').textContent = lv.tip;
@@ -119,6 +118,8 @@
         $('brief-boss').textContent = lv.boss.hp + ' ' +
             (lv.boss.hp === 1 ? 'укус' : (lv.boss.hp < 5 ? 'укуса' : 'укусов'));
         $('brief-walls').textContent = lv.walls.length ? lv.walls.length : 'нет';
+        $('chip-target').hidden = false;
+        $('chip-target').textContent = g.label;
         show('screen-brief');
     }
 
@@ -166,14 +167,25 @@
     function spawnFile() {
         var spot = randomFree(false);
         if (!spot) { return; }
+        var mine = 0;
+        state.files.forEach(function (f) { if (f.g === state.group) { mine++; } });
+        var wantMine = Math.ceil(state.files.length * 0.45);
         var pool = allExts();
-        var pick = pool[Math.floor(Math.random() * pool.length)];
+        var pick;
+        if (mine < wantMine) {
+            var own = GROUPS[state.group].exts;
+            var ext = own[Math.floor(Math.random() * own.length)];
+            pick = { ext: ext, g: state.group };
+        } else {
+            pick = pool[Math.floor(Math.random() * pool.length)];
+        }
         state.files.push({ x: spot.x, y: spot.y, ext: pick.ext, g: pick.g, born: performance.now() });
     }
 
     function refillFiles() {
+        var limit = state.level.onField;
         var guard = 0;
-        while (state.files.length < ON_FIELD && guard < 60) {
+        while (state.files.length < limit && guard < 120) {
             spawnFile();
             guard++;
         }
@@ -182,6 +194,7 @@
     function startLevel() {
         var lv = LEVELS[state.levelIndex];
         state.level = lv;
+        state.group = lv.group;
         state.lives = LIVES_START;
         state.paused = false;
         state.running = true;

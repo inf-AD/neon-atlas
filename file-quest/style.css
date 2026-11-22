@@ -352,54 +352,6 @@ body::after {
 
 /* ---------------- Выбор типа файлов ---------------- */
 
-.pick {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 18px;
-}
-
-.pick-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 14px 10px 12px;
-    border-radius: 14px;
-    border: 3px solid var(--ink);
-    background: #fff;
-    cursor: pointer;
-    text-align: center;
-    box-shadow: 0 5px 0 rgba(23, 32, 58, .18);
-    transition: transform .14s, box-shadow .14s, background .14s;
-}
-
-.pick-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 7px 0 rgba(23, 32, 58, .2);
-}
-
-.pick-card input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.pick-card:has(input:checked) {
-    background: linear-gradient(170deg, #fff 0%, var(--l) 190%);
-    border-color: var(--c);
-    box-shadow:
-        0 5px 0 var(--c),
-        0 0 0 3px rgba(255, 255, 255, .9),
-        0 0 26px var(--c);
-    transform: translateY(-2px);
-}
-
-.pick-card:has(input:focus-visible) {
-    box-shadow: 0 0 0 4px rgba(34, 240, 255, .65);
-}
-
 .pick-icon {
     width: 40px;
     height: 46px;
@@ -757,6 +709,69 @@ kbd {
     background: var(--neon-cyan);
 }
 
+/* ---------------- Маршрут уровней ---------------- */
+
+.route {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+}
+
+.route-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 3px solid var(--ink);
+    background: linear-gradient(170deg, #fff 0%, var(--l) 240%);
+    box-shadow: 0 4px 0 rgba(23, 32, 58, .18);
+}
+
+.route-num {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--c);
+    border-radius: 50%;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .2);
+}
+
+.route-step .pick-icon {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 30px;
+}
+
+.route-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.route-body b {
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.route-need {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--c);
+    white-space: nowrap;
+}
+
 /* ---------------- Таблица ---------------- */
 
 .table-wrap {
@@ -841,7 +856,6 @@ kbd {
 
     .card { padding: 18px 16px 20px; }
 
-    .pick { grid-template-columns: 1fr 1fr; }
 
     .hud { gap: 6px; padding: 8px; }
 
