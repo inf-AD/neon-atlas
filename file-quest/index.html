@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>ФАЙЛ-КВЕСТ · собери файлы нужного типа</title>
-<meta name="description" content="Мини-игра-платформер: соберите все файлы выбранного расширения, победите босса и пройдите четыре уровня.">
+<title>ФАЙЛ-КВЕСТ · змейка по расширениям файлов</title>
+<meta name="description" content="Мини-игра-змейка: собирайте файлы выбранного расширения, растите, не врезайтесь в стены и хвост, победите босса.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,7 +22,7 @@
             </span>
             <span class="brand-text">
                 <b>ФАЙЛ-КВЕСТ</b>
-                <span>расширения файлов</span>
+                <span>змейка · расширения файлов</span>
             </span>
         </div>
         <div class="topbar-right">
@@ -33,10 +33,10 @@
 
     <section class="screen" id="screen-start">
         <div class="hero">
-            <h1>Собери файлы<br><em>своего</em> расширения</h1>
+            <h1>Съешь файлы<br><em>своего</em> расширения</h1>
             <p class="lead">
-                Четыре уровня, три жизни, босс в конце каждого. Правильный файл — плюс очки,
-                чужой — минус. Значки как в Windows: смотрите на цвет и подпись.
+                Змейка ползёт по полю. Свой файл — рост и очки, чужой — штраф и минус звено.
+                Четыре уровня, три жизни, босс-папка в конце каждого.
             </p>
             <ul class="facts">
                 <li><b>4</b><span>уровня</span></li>
@@ -122,8 +122,8 @@
                             </div>
 
             <button class="btn primary big" type="submit">НАЧАТЬ ИГРУ</button>
-            <p class="hint">Управление: <kbd>←</kbd> <kbd>→</kbd> или <kbd>A</kbd> <kbd>D</kbd>,
-                прыжок — <kbd>Пробел</kbd> или <kbd>↑</kbd>. На планшете — кнопки внизу экрана.</p>
+            <p class="hint">Управление: <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> или
+                <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>. На планшете — крестовина под полем.</p>
         </form>
     </section>
 
@@ -131,7 +131,7 @@
         <div class="card brief-card">
             <p class="eyebrow" id="brief-eyebrow">Уровень 1 из 4</p>
             <h1 id="brief-name">Разминка</h1>
-            <p class="lead" id="brief-tip">Собирайте только файлы своего типа.</p>
+            <p class="lead" id="brief-tip">Ползите к файлам своего типа.</p>
             <div class="brief-grid">
                 <div class="brief-item">
                     <small>Собираем</small>
@@ -139,9 +139,14 @@
                     <span id="brief-exts">.txt .rtf .doc</span>
                 </div>
                 <div class="brief-item">
-                    <small>Файлов на уровне</small>
-                    <b id="brief-total">20</b>
-                    <span>нужных — <i id="brief-need">5</i></span>
+                    <small>Нужно съесть</small>
+                    <b id="brief-need">5</b>
+                    <span>файлов своего типа</span>
+                </div>
+                <div class="brief-item">
+                    <small>Скорость</small>
+                    <b id="brief-speed">Спокойная</b>
+                    <span id="brief-speed-num">165 мс на шаг</span>
                 </div>
                 <div class="brief-item">
                     <small>Жизни</small>
@@ -150,18 +155,24 @@
                 </div>
                 <div class="brief-item">
                     <small>Босс</small>
-                    <b id="brief-boss">3 удара</b>
-                    <span>откроется, когда соберёте всё</span>
+                    <b id="brief-boss">3 укуса</b>
+                    <span>появится после сбора</span>
+                </div>
+                <div class="brief-item">
+                    <small>Стены</small>
+                    <b id="brief-walls">нет</b>
+                    <span>блоков на поле</span>
                 </div>
             </div>
-            <button class="btn primary big" id="btn-brief-go" type="button">ВПЕРЁД!</button>
+            <button class="btn primary big" id="btn-brief-go" type="button">ПОПОЛЗЛИ!</button>
         </div>
     </section>
 
     <section class="screen game-screen" id="screen-game" hidden>
         <div class="hud">
             <div class="hud-item"><small>Уровень</small><b id="hud-level">1/4</b></div>
-            <div class="hud-item"><small>Собрано</small><b id="hud-files">0/5</b></div>
+            <div class="hud-item"><small>Съедено</small><b id="hud-files">0/5</b></div>
+            <div class="hud-item"><small>Длина</small><b id="hud-len">3</b></div>
             <div class="hud-item"><small>Очки</small><b id="hud-score">0</b></div>
             <div class="hud-item hud-lives"><small>Жизни</small><b id="hud-lives">♥♥♥</b></div>
             <div class="hud-item hud-boss" id="hud-boss-box" hidden>
@@ -171,7 +182,7 @@
         </div>
 
         <div class="stage">
-            <canvas id="stage" width="960" height="540" aria-label="Игровое поле"></canvas>
+            <canvas id="stage" width="880" height="520" aria-label="Игровое поле змейки"></canvas>
             <div class="stage-msg" id="stage-msg" hidden><span></span></div>
             <div class="pause-box" id="pause-box" hidden>
                 <h2>Пауза</h2>
@@ -180,10 +191,11 @@
             </div>
         </div>
 
-        <div class="touch" id="touch-controls">
-            <button class="tbtn" data-move="left" type="button" aria-label="Влево">◀</button>
-            <button class="tbtn" data-move="right" type="button" aria-label="Вправо">▶</button>
-            <button class="tbtn jump" data-move="jump" type="button" aria-label="Прыжок">▲</button>
+        <div class="dpad" id="touch-controls">
+            <button class="dbtn up" data-move="up" type="button" aria-label="Вверх">▲</button>
+            <button class="dbtn left" data-move="left" type="button" aria-label="Влево">◀</button>
+            <button class="dbtn down" data-move="down" type="button" aria-label="Вниз">▼</button>
+            <button class="dbtn right" data-move="right" type="button" aria-label="Вправо">▶</button>
         </div>
     </section>
 
@@ -192,8 +204,9 @@
             <p class="eyebrow" id="stats-eyebrow">Уровень 1 пройден</p>
             <h1 id="stats-title">Отлично!</h1>
             <div class="stats-grid">
-                <div class="stat"><small>Собрано нужных</small><b id="stats-files">5 из 5</b></div>
-                <div class="stat"><small>Ошибок</small><b id="stats-miss">0</b></div>
+                <div class="stat"><small>Съедено своих</small><b id="stats-files">5 из 5</b></div>
+                <div class="stat"><small>Чужих файлов</small><b id="stats-miss">0</b></div>
+                <div class="stat"><small>Длина змейки</small><b id="stats-len">7</b></div>
                 <div class="stat"><small>Время</small><b id="stats-time">1:20</b></div>
                 <div class="stat accent"><small>Очки за уровень</small><b id="stats-score">860</b></div>
             </div>
@@ -212,15 +225,16 @@
             <p class="lead" id="final-sub">Никнейм · 7А · ШОП-2 · Текстовый файл</p>
             <div class="stats-grid">
                 <div class="stat"><small>Всего очков</small><b id="final-score">0</b></div>
-                <div class="stat"><small>Файлов собрано</small><b id="final-files">0</b></div>
-                <div class="stat"><small>Ошибок</small><b id="final-miss">0</b></div>
+                <div class="stat"><small>Файлов съедено</small><b id="final-files">0</b></div>
+                <div class="stat"><small>Чужих файлов</small><b id="final-miss">0</b></div>
+                <div class="stat"><small>Длина в финале</small><b id="final-len">0</b></div>
                 <div class="stat"><small>Время игры</small><b id="final-time">0:00</b></div>
             </div>
             <h2 class="mt">По уровням</h2>
             <div class="table-wrap">
                 <table class="board">
                     <thead>
-                        <tr><th>Уровень</th><th>Собрано</th><th>Ошибки</th><th>Время</th><th>Очки</th></tr>
+                        <tr><th>Уровень</th><th>Съедено</th><th>Чужих</th><th>Длина</th><th>Время</th><th>Очки</th></tr>
                     </thead>
                     <tbody id="final-rows"></tbody>
                 </table>
@@ -233,11 +247,12 @@
         <div class="card lose-card">
             <p class="eyebrow">Жизни закончились</p>
             <h1>Уровень не пройден</h1>
-            <p class="lead" id="lose-sub">Соберите нужные файлы и не трогайте чужие — тогда откроется босс.</p>
+            <p class="lead" id="lose-sub">Не врезайтесь в стены и собственный хвост — и собирайте только свои файлы.</p>
             <div class="stats-grid">
                 <div class="stat"><small>Уровень</small><b id="lose-level">1</b></div>
-                <div class="stat"><small>Собрано нужных</small><b id="lose-files">2 из 5</b></div>
-                <div class="stat"><small>Ошибок</small><b id="lose-miss">3</b></div>
+                <div class="stat"><small>Съедено своих</small><b id="lose-files">2 из 5</b></div>
+                <div class="stat"><small>Чужих файлов</small><b id="lose-miss">3</b></div>
+                <div class="stat"><small>Длина змейки</small><b id="lose-len">4</b></div>
                 <div class="stat accent"><small>Очки за попытку</small><b id="lose-score">140</b></div>
             </div>
             <p class="total-line">Всего очков: <b id="lose-total">140</b></p>
@@ -249,12 +264,12 @@
     </section>
 
     <div class="foot">
-        <span>ФАЙЛ-КВЕСТ · PHP + HTML</span>
+        <span>ФАЙЛ-КВЕСТ · змейка · PHP + HTML</span>
         <span id="foot-legend">.txt .rtf .doc .docx .odt .pdf · .bmp .gif .jpg .png · .wav .mp3 .mid · .avi .mp4 .mpeg</span>
     </div>
 </div>
 
-<script>window.FQ = {"groups":{"text":{"label":"Текстовый файл","short":"Текст","exts":["txt","rtf","doc","docx","odt","pdf"],"color":"#2f6fd0","light":"#8fb8ff","icon":"doc","hint":"Документы: заметка, реферат, книга."},"image":{"label":"Графический файл","short":"Графика","exts":["bmp","gif","jpg","png"],"color":"#7a3fd0","light":"#c2a0ff","icon":"img","hint":"Картинки: рисунок, снимок, анимация."},"audio":{"label":"Звуковой файл","short":"Звук","exts":["wav","mp3","mid"],"color":"#d03f86","light":"#ff9ecb","icon":"audio","hint":"Звук: запись голоса, трек, мелодия."},"video":{"label":"Видеофайл","short":"Видео","exts":["avi","mp4","mpeg"],"color":"#d06a2f","light":"#ffbb8a","icon":"video","hint":"Видео: фильм, ролик, запись экрана."}},"shops":["ШОП-2","ШОП-3","ШОП-5","ШОП-6","ШОП-7"],"levels":[{"n":1,"name":"Разминка","width":2900,"ground":[[0,900],[1000,1900],[2000,2900]],"plats":[[420,360,160],[700,272,140],[1150,352,180],[1500,262,160],[2180,342,180],[2480,252,150]],"files":[{"x":444,"y":302,"ext":"wav","g":"audio"},{"x":520,"y":302,"ext":"bmp","g":"image"},{"x":724,"y":214,"ext":"mp3","g":"audio"},{"x":780,"y":214,"ext":"avi","g":"video"},{"x":1174,"y":294,"ext":"gif","g":"image"},{"x":1270,"y":294,"ext":"txt","g":"text"},{"x":1524,"y":204,"ext":"mid","g":"audio"},{"x":1600,"y":204,"ext":"jpg","g":"image"},{"x":2204,"y":284,"ext":"mp4","g":"video"},{"x":2300,"y":284,"ext":"rtf","g":"text"},{"x":2504,"y":194,"ext":"wav","g":"audio"},{"x":2570,"y":194,"ext":"mpeg","g":"video"},{"x":250,"y":398,"ext":"doc","g":"text"},{"x":600,"y":398,"ext":"avi","g":"video"},{"x":1050,"y":398,"ext":"mp3","g":"audio"},{"x":1350,"y":398,"ext":"mp4","g":"video"},{"x":1750,"y":398,"ext":"png","g":"image"},{"x":2100,"y":398,"ext":"bmp","g":"image"},{"x":2400,"y":398,"ext":"docx","g":"text"},{"x":2650,"y":398,"ext":"odt","g":"text"}],"enemies":[[560,420,760],[1600,1450,1820]],"boss":{"x":2680,"hp":3,"speed":0.65},"perGroup":5,"tip":"Собирайте только файлы своего типа. Чужой файл отнимает очки."},{"n":2,"name":"Точность","width":3400,"ground":[[0,700],[800,1500],[1600,2300],[2400,3400]],"plats":[[300,340,150],[560,250,130],[980,350,170],[1250,258,150],[1720,340,160],[2000,250,150],[2250,350,160],[2600,280,150],[2900,350,160]],"files":[{"x":324,"y":282,"ext":"wav","g":"audio"},{"x":390,"y":282,"ext":"avi","g":"video"},{"x":584,"y":192,"ext":"txt","g":"text"},{"x":630,"y":192,"ext":"mp4","g":"video"},{"x":1004,"y":292,"ext":"bmp","g":"image"},{"x":1090,"y":292,"ext":"gif","g":"image"},{"x":1274,"y":200,"ext":"mpeg","g":"video"},{"x":1340,"y":200,"ext":"avi","g":"video"},{"x":1744,"y":282,"ext":"rtf","g":"text"},{"x":1820,"y":282,"ext":"jpg","g":"image"},{"x":2024,"y":192,"ext":"doc","g":"text"},{"x":2090,"y":192,"ext":"mp3","g":"audio"},{"x":2274,"y":292,"ext":"png","g":"image"},{"x":2350,"y":292,"ext":"bmp","g":"image"},{"x":2624,"y":222,"ext":"docx","g":"text"},{"x":2690,"y":222,"ext":"mid","g":"audio"},{"x":2924,"y":292,"ext":"odt","g":"text"},{"x":3000,"y":292,"ext":"wav","g":"audio"},{"x":200,"y":398,"ext":"mp3","g":"audio"},{"x":520,"y":398,"ext":"gif","g":"image"},{"x":900,"y":398,"ext":"mid","g":"audio"},{"x":1150,"y":398,"ext":"mp4","g":"video"},{"x":1450,"y":398,"ext":"mpeg","g":"video"},{"x":1800,"y":398,"ext":"pdf","g":"text"}],"enemies":[[420,300,620],[1150,950,1420],[2050,1800,2250]],"boss":{"x":3180,"hp":3,"speed":0.75},"perGroup":6,"tip":"Появились провалы. Прыгайте по платформам и не спешите."},{"n":3,"name":"Скорость","width":3900,"ground":[[0,600],[700,1300],[1400,2000],[2100,2700],[2800,3900]],"plats":[[260,330,140],[480,240,130],[860,350,150],[1120,255,140],[1500,330,160],[1760,240,140],[2180,340,150],[2440,250,140],[2900,330,150],[3200,240,140],[3450,330,150]],"files":[{"x":284,"y":272,"ext":"bmp","g":"image"},{"x":340,"y":272,"ext":"gif","g":"image"},{"x":504,"y":182,"ext":"wav","g":"audio"},{"x":550,"y":182,"ext":"mp3","g":"audio"},{"x":884,"y":292,"ext":"avi","g":"video"},{"x":950,"y":292,"ext":"mp4","g":"video"},{"x":1144,"y":197,"ext":"jpg","g":"image"},{"x":1200,"y":197,"ext":"mpeg","g":"video"},{"x":1524,"y":272,"ext":"txt","g":"text"},{"x":1600,"y":272,"ext":"mid","g":"audio"},{"x":1784,"y":182,"ext":"png","g":"image"},{"x":1840,"y":182,"ext":"bmp","g":"image"},{"x":2204,"y":282,"ext":"wav","g":"audio"},{"x":2270,"y":282,"ext":"mp3","g":"audio"},{"x":2464,"y":192,"ext":"rtf","g":"text"},{"x":2520,"y":192,"ext":"mid","g":"audio"},{"x":2924,"y":272,"ext":"doc","g":"text"},{"x":2990,"y":272,"ext":"docx","g":"text"},{"x":3224,"y":182,"ext":"avi","g":"video"},{"x":3280,"y":182,"ext":"mp4","g":"video"},{"x":3474,"y":272,"ext":"odt","g":"text"},{"x":3540,"y":272,"ext":"gif","g":"image"},{"x":180,"y":398,"ext":"pdf","g":"text"},{"x":450,"y":398,"ext":"mpeg","g":"video"},{"x":800,"y":398,"ext":"txt","g":"text"},{"x":1050,"y":398,"ext":"avi","g":"video"},{"x":1550,"y":398,"ext":"jpg","g":"image"},{"x":1850,"y":398,"ext":"wav","g":"audio"}],"enemies":[[350,250,520],[1000,820,1200],[1700,1550,1900],[2350,2200,2550]],"boss":{"x":3680,"hp":4,"speed":0.85},"perGroup":7,"tip":"Провалы шире, врагов больше. Босс выдержит четыре удара."},{"n":4,"name":"Финал","width":4400,"ground":[[0,520],[620,1180],[1280,1800],[1900,2400],[2500,3000],[3100,4400]],"plats":[[240,320,130],[430,232,120],[700,330,140],[940,240,130],[1350,320,140],[1600,232,130],[1980,330,140],[2230,240,130],[2580,320,140],[2830,232,130],[3180,320,140],[3430,232,130],[3700,320,140]],"files":[{"x":264,"y":262,"ext":"txt","g":"text"},{"x":310,"y":262,"ext":"wav","g":"audio"},{"x":454,"y":174,"ext":"rtf","g":"text"},{"x":490,"y":174,"ext":"bmp","g":"image"},{"x":724,"y":272,"ext":"doc","g":"text"},{"x":780,"y":272,"ext":"gif","g":"image"},{"x":964,"y":182,"ext":"docx","g":"text"},{"x":1010,"y":182,"ext":"jpg","g":"image"},{"x":1374,"y":262,"ext":"png","g":"image"},{"x":1430,"y":262,"ext":"bmp","g":"image"},{"x":1624,"y":174,"ext":"mp3","g":"audio"},{"x":1670,"y":174,"ext":"gif","g":"image"},{"x":2004,"y":272,"ext":"avi","g":"video"},{"x":2060,"y":272,"ext":"mp4","g":"video"},{"x":2254,"y":182,"ext":"mid","g":"audio"},{"x":2300,"y":182,"ext":"wav","g":"audio"},{"x":2604,"y":262,"ext":"odt","g":"text"},{"x":2660,"y":262,"ext":"pdf","g":"text"},{"x":2854,"y":174,"ext":"mp3","g":"audio"},{"x":2900,"y":174,"ext":"mpeg","g":"video"},{"x":3204,"y":262,"ext":"avi","g":"video"},{"x":3260,"y":262,"ext":"txt","g":"text"},{"x":3454,"y":174,"ext":"jpg","g":"image"},{"x":3500,"y":174,"ext":"mp4","g":"video"},{"x":3724,"y":262,"ext":"mid","g":"audio"},{"x":3780,"y":262,"ext":"wav","g":"audio"},{"x":160,"y":398,"ext":"mpeg","g":"video"},{"x":400,"y":398,"ext":"rtf","g":"text"},{"x":760,"y":398,"ext":"mp3","g":"audio"},{"x":1020,"y":398,"ext":"avi","g":"video"},{"x":1420,"y":398,"ext":"png","g":"image"},{"x":1700,"y":398,"ext":"mp4","g":"video"}],"enemies":[[300,200,480],[900,760,1100],[1600,1400,1750],[2250,2050,2380],[2900,2650,2960]],"boss":{"x":4180,"hp":5,"speed":0.95},"perGroup":8,"tip":"Последний рывок. Пять ударов по боссу — и победа."}],"score":{"correct":100,"wrong":-60,"stomp":30,"bossHit":150,"bossKill":300,"levelEnd":250}};</script>
+<script>window.FQ = {"groups":{"text":{"label":"Текстовый файл","short":"Текст","exts":["txt","rtf","doc","docx","odt","pdf"],"color":"#2f6fd0","light":"#8fb8ff","icon":"doc","hint":"Документы: заметка, реферат, книга."},"image":{"label":"Графический файл","short":"Графика","exts":["bmp","gif","jpg","png"],"color":"#7a3fd0","light":"#c2a0ff","icon":"img","hint":"Картинки: рисунок, снимок, анимация."},"audio":{"label":"Звуковой файл","short":"Звук","exts":["wav","mp3","mid"],"color":"#d03f86","light":"#ff9ecb","icon":"audio","hint":"Звук: запись голоса, трек, мелодия."},"video":{"label":"Видеофайл","short":"Видео","exts":["avi","mp4","mpeg"],"color":"#d06a2f","light":"#ffbb8a","icon":"video","hint":"Видео: фильм, ролик, запись экрана."}},"shops":["ШОП-2","ШОП-3","ШОП-5","ШОП-6","ШОП-7"],"levels":[{"n":1,"name":"Разминка","speed":165,"need":5,"walls":[],"boss":{"x":18,"y":2,"w":2,"h":2,"hp":3,"speed":520},"tip":"Ползите к файлам своего типа. Чужой файл отнимает очки и укорачивает змейку."},{"n":2,"name":"Коридоры","speed":140,"need":7,"walls":[[8,2,1,3],[13,8,1,3]],"boss":{"x":18,"y":2,"w":2,"h":2,"hp":3,"speed":460},"tip":"Появились стены. Врезаться в них нельзя — как и в собственный хвост."},{"n":3,"name":"Лабиринт","speed":118,"need":9,"walls":[[5,3,3,1],[14,3,3,1],[5,9,3,1],[14,9,3,1]],"boss":{"x":17,"y":1,"w":2,"h":2,"hp":4,"speed":400},"tip":"Змейка длиннее — хвост мешает. Считайте повороты заранее."},{"n":4,"name":"Финал","speed":98,"need":11,"walls":[[4,2,1,3],[17,2,1,3],[4,8,1,3],[17,8,1,3],[10,5,2,1],[10,7,2,1]],"boss":{"x":17,"y":1,"w":2,"h":2,"hp":5,"speed":340},"tip":"Самый быстрый темп. Пять укусов — и босс-папка рассыпется."}],"score":{"correct":100,"wrong":-60,"bossHit":150,"bossKill":300,"levelEnd":250},"grid":{"w":22,"h":13,"cell":40},"onField":6};</script>
 <script src="game.js"></script>
 </body>
 </html>
