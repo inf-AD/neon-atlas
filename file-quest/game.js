@@ -9,7 +9,7 @@
     var SCORE = D.score;
 
     var W = 960, H = 540, GROUND_Y = 470;
-    var GRAV = 0.62, JUMP_V = -12.6, RUN = 4.7, MAX_FALL = 15;
+    var GRAV = 0.155, JUMP_V = -6.3, RUN = 2.35, MAX_FALL = 7.5;
     var PW = 30, PH = 42;
     var LIVES_START = 3;
 
@@ -151,7 +151,7 @@
                 return { x: f.x, y: f.y, ext: f.ext, g: f.g, taken: false, i: i, phase: i * 0.7 };
             }),
             enemies: lv.enemies.map(function (e) {
-                return { x: e[0], x1: e[1], x2: e[2], y: GROUND_Y - 30, dead: false, vx: 1.5, phase: e[0] };
+                return { x: e[0], x1: e[1], x2: e[2], y: GROUND_Y - 30, dead: false, vx: 0.75, phase: e[0] };
             }),
             boss: null
         };
@@ -409,7 +409,7 @@
     function updatePlayer(dt) {
         var p = state.player;
         var lv = state.level;
-        var accel = 0.9, friction = 0.78;
+        var accel = 0.45, friction = 0.9;
 
         if (state.keys.left) { p.vx -= accel; p.face = -1; }
         if (state.keys.right) { p.vx += accel; p.face = 1; }
@@ -561,7 +561,7 @@
                 var falling = p.vy > 1.5 && (p.y + PH - e.y) < 22;
                 if (falling) {
                     e.dead = true;
-                    p.vy = -9.5;
+                    p.vy = -4.75;
                     p.invuln = 400;
                     state.totalScore += SCORE.stomp;
                     burst(e.x + 17, e.y, '#a6ff4d', '+' + SCORE.stomp);
@@ -642,7 +642,7 @@
             if (onTop) {
                 b.hp--;
                 b.hitFlash = 220;
-                p.vy = -11.5;
+                p.vy = -5.75;
                 p.invuln = 900;
                 state.totalScore += SCORE.bossHit;
                 burst(b.x + b.w / 2, b.y, '#22f0ff', '+' + SCORE.bossHit);
@@ -722,8 +722,8 @@
         var p = state.player;
         if (p.invuln > 0) { return; }
         p.invuln = 1200;
-        p.vy = -8;
-        p.vx = p.face > 0 ? -4 : 4;
+        p.vy = -4;
+        p.vx = p.face > 0 ? -2 : 2;
         loseLife('Ой! Берегите жизни.');
     }
 
